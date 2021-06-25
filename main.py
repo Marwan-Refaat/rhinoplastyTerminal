@@ -193,7 +193,7 @@ def silverFunction(event,x,y,flags,params):
     global unitDistance
 
     pointsList = params[0] 
-    if (event == cv2.EVENT_LBUTTONDOWN) and (len(pointsList) < 2) : #Left Click and <5 points exist
+    if (event == cv2.EVENT_LBUTTONDOWN) and (len(pointsList) < 3) : #Left Click and <3 points exist
         
         #Draw Point
         cv2.circle(img,(x,y),2,(0,0,255),cv2.FILLED)
@@ -223,31 +223,45 @@ def silverFunction(event,x,y,flags,params):
             #Draw Line
             cv2.line(img,startPoint,endPoint,(0,0,255),2)
 
-            print("Please draw point to measure distance to Frankfort horizontal line")
+            print("Please draw point to draw vertical line")
         
-        elif len(pointsList) == 2: #Placing measuring point
-            
+        elif len(pointsList) == 2: #Draw vertical line
             #Extend Line points
-            startPointX = pointsList[0][0] - extensionFactor
-            startPointY = pointsList[0][1]
+            startPointX = pointsList[1][0] 
+            startPointY = pointsList[1][1] - extensionFactor
             startPoint = (startPointX,startPointY)
 
-            endPointX = pointsList[0][0] + extensionFactor
-            endPointY = pointsList[0][1]
+            endPointX = pointsList[1][0] 
+            endPointY = pointsList[1][1] + extensionFactor
+            endPoint = (endPointX,endPointY)
+
+            #Draw Line
+            cv2.line(img,startPoint,endPoint,(0,0,255),2)
+            print("Please draw measuring point")
+
+        elif len(pointsList) == 3: #Placing measuring point
+            
+            #Extend Line points
+            startPointX = pointsList[1][0] 
+            startPointY = pointsList[1][1] - extensionFactor
+            startPoint = (startPointX,startPointY)
+
+            endPointX = pointsList[1][0] 
+            endPointY = pointsList[1][1] + extensionFactor
             endPoint = (endPointX,endPointY)
 
 
             s1 = sympy.Segment(startPoint,endPoint)
-            shortestDistance = s1.distance(pointsList[1])
+            shortestDistance = s1.distance(pointsList[2])
             measuredDistance = shortestDistance*unitDistance
             #print("Shortest distance is: ",shortestDistance)
             print("Measured distance is: ",measuredDistance)
 
-            #Intersection point is x-coordinate of measuring point and y-coordinate of line
-            intersectionPoint = (pointsList[1][0],startPointY)
+            #Intersection point is x-coordinate of vertical line and y-coordinate of measuring point
+            intersectionPoint = (startPointX,pointsList[2][1])
 
             #Draw line between measuring point and Frankfort line
-            cv2.line(img,pointsList[1],intersectionPoint,(0,0,255),2)
+            cv2.line(img,pointsList[2],intersectionPoint,(0,0,255),2)
 
 
 
